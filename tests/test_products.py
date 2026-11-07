@@ -67,3 +67,12 @@ def test_category_new_funcs(capsys: Any, category: Category, product2: Product) 
         f"Имя, 1.1 руб. Остаток: 1 шт.\n"
         f"{product2.name}, 2.2 руб. Остаток: 2 шт.\n\n"
     )
+
+
+def test_magic_methods(product: Product, product2: Product, category: Category) -> None:
+    assert str(product) == "Имя, 1.1 руб. Остаток: 1 шт."
+
+    assert product + product2 == 5.5
+
+    category.add_product(product2)
+    assert str(category) == "Имя, количество продуктов: 3 шт."
