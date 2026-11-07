@@ -1,15 +1,49 @@
+from typing import Any
+
+
 class Product:
 
     name: str
     description: str
-    price: float
+    __price: float
     quantity: int
 
     def __init__(self, name: str, description: str, price: float, quantity: int):
         self.name = name
         self.description = description
-        self.price = price
+        self.__price = price
         self.quantity = quantity
+
+    @classmethod
+    def new_product(cls, prod_dict: Any, prods_list: list | None = None) -> Any:
+        """
+        Принимает словарь данных Product и список продуктов. Добавляет или складывает похожие объекты
+        """
+        new_prod = cls(
+            prod_dict.get("name"), prod_dict.get("description"), prod_dict.get("price"), prod_dict.get("quantity")
+        )
+        for prod in prods_list or []:
+            if new_prod.name == prod.name:
+                new_prod.quantity = new_prod.quantity + prod.quantity
+                if new_prod.__price != prod.__price:
+                    if new_prod.__price < prod.__price:
+                        new_prod.__price = prod.__price
+        return new_prod
+
+    @property
+    def price(self) -> float:
+        """
+        Возвращает приватную цену продукта
+        """
+        return self.__price
+
+    @price.setter
+    def price(self, new_price: float) -> None:
+        if new_price <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+            return
+
+        self.__price = new_price
 
 
 class Category:
@@ -18,12 +52,29 @@ class Category:
 
     name: str
     description: str
-    products: list
+    __products: list
 
     def __init__(self, name: str, description: str, products: list):
         self.name = name
         self.description = description
-        self.products = products
+        self.__products = products
 
         Category.category_count += 1
         Category.product_count += len(products)
+
+    def add_product(self, prod: Product) -> Any:
+        """
+        Добавляет продукт в приватный список продуктов
+        """
+        self.__products.append(prod)
+        Category.product_count += 1
+
+    @property
+    def products(self) -> str:
+        """
+        Выводит продукты в приватном списке, формат: str
+        """
+        product_str = ""
+        for x in self.__products:
+            product_str += f"{x.name}, {x.price} руб. Остаток: {x.quantity} шт.\n"
+        return product_str

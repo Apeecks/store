@@ -1,12 +1,10 @@
-from typing import Any
-
 import pytest
 
 from src.products import Category, Product
 
 
 @pytest.fixture
-def products() -> Any:
+def product() -> Product:
     """
     Тестовые данные для класса Products
     """
@@ -14,8 +12,30 @@ def products() -> Any:
 
 
 @pytest.fixture
-def category(products: Product) -> Any:
-    return Category("Имя", "Описание", [
-        products,
-        Product("Имя2", "Описание2", 2.2, 2)
-    ])
+def product2() -> Product:
+    """
+    Тестовые данные для класса Category
+    """
+    return Product("Имя2", "Описание2", 2.2, 2)
+
+
+@pytest.fixture
+def category(product: Product) -> Category:
+    """
+    Тестовые данные для класса Category
+    """
+    return Category("Имя", "Описание", [product])
+
+
+@pytest.fixture
+def new_product() -> dict:
+    """
+    Данные для метода new_product, Product
+    """
+    return {"name": "Имя", "description": "Описание", "price": 1.0, "quantity": 9}
+
+
+@pytest.fixture(autouse=True)
+def reset_category_counters():
+    Category.category_count = 0
+    Category.product_count = 0
