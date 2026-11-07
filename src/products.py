@@ -18,6 +18,9 @@ class Product:
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
     def __add__(self, other: "Product") -> float:
+        if type(self) is not type(other):
+            raise TypeError("Складывать можно только товары одного класса")
+
         return self.price * self.quantity + other.price * other.quantity
 
     @classmethod
@@ -78,6 +81,9 @@ class Category:
         """
         Добавляет продукт в приватный список продуктов
         """
+        if not isinstance(prod, Product):
+            raise TypeError("Можно добавить только объект Product")
+
         self.__products.append(prod)
         Category.product_count += 1
 
