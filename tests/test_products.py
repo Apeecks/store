@@ -4,6 +4,8 @@ from typing import Any
 from src.products import Category, Product
 from src.lawn_grass import LawnGrass
 from src.smartphone import Smartphone
+from src.base_product import BaseProduct
+from src.mixin_repr import MixinRepr
 
 
 def test_class_prod_cat(product: Any, category: Any) -> Any:
@@ -37,6 +39,8 @@ def test_product_new_funcs(capsys: Any, product: Product, new_product: dict) -> 
     assert new_prod.price == prod_assert.price
     assert new_prod.quantity == prod_assert.quantity
 
+    capsys.readouterr()
+
     product.price = -100
     captured = capsys.readouterr()
     assert captured.out == "Цена не должна быть нулевая или отрицательная\n"
@@ -55,6 +59,8 @@ def test_category_new_funcs(capsys: Any, category: Category, product2: Product) 
     Тесты новой функциональности, hw14_2, class Category
     """
     assert Category.product_count == 1
+
+    capsys.readouterr()
 
     print(category.products)
     captured = capsys.readouterr()
@@ -145,3 +151,47 @@ def test_type_restrictions(
         category.add_product(invalid_product)
 
     assert Category.product_count == 3
+
+
+def test_abstract_product() -> None:
+    with pytest.raises(TypeError):
+        BaseProduct("Товар", "Описание", 100, 1)
+
+    assert issubclass(Product, BaseProduct)
+    assert issubclass(Smartphone, Product)
+    assert issubclass(LawnGrass, Product)
+
+    assert Smartphone.__bases__ == (Product,)
+    assert LawnGrass.__bases__ == (Product,)
+
+    assert issubclass(Product, MixinRepr)
+
+
+def test_mixin_repr(capsys: Any) -> None:
+    product = Product("Продукт1", "Описание продукта", 1200, 10)
+
+    captured = capsys.readouterr()
+
+    assert captured.out == "Product('Продукт1', 'Описание продукта', 1200, 10)\n"
+
+    assert repr(product) == "Product('Продукт1', 'Описание продукта', 1200, 10)"
+
+    smartphone = Smartphone(
+        "Телефон", "Описание", 2000, 2,
+        95.5, "A1", 128, "Чёрный"
+    )
+
+    grass = LawnGrass(
+        "Трава", "Описание", 100, 3,
+        "Россия", "7 дней", "Зелёный"
+    )
+
+    captured = capsys.readouterr()
+
+    assert captured.out == (
+        "Smartphone('Телефон', 'Описание', 2000, 2)\n"
+        "LawnGrass('Трава', 'Описание', 100, 3)\n"
+    )
+
+    assert smartphone.price == 2000
+    assert grass.quantity == 3
