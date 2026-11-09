@@ -1,7 +1,7 @@
 import pytest
 
-from src.products import Category, Product
 from src.lawn_grass import LawnGrass
+from src.products import Category, Product
 from src.smartphone import Smartphone
 
 
