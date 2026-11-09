@@ -14,13 +14,21 @@ class Product:
         self.__price = price
         self.quantity = quantity
 
+    def __str__(self) -> str:
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other: "Product") -> float:
+        return self.price * self.quantity + other.price * other.quantity
+
     @classmethod
     def new_product(cls, prod_dict: Any, prods_list: list | None = None) -> Any:
         """
-        Принимает словарь данных Product и список продуктов. Добавляет или складывает похожие объекты
+        Принимает словарь данных Product и список продуктов.
+        Добавляет или складывает похожие объекты
         """
         new_prod = cls(
-            prod_dict.get("name"), prod_dict.get("description"), prod_dict.get("price"), prod_dict.get("quantity")
+            prod_dict.get("name"), prod_dict.get("description"),
+            prod_dict.get("price"), prod_dict.get("quantity")
         )
         for prod in prods_list or []:
             if new_prod.name == prod.name:
@@ -61,6 +69,10 @@ class Category:
 
         Category.category_count += 1
         Category.product_count += len(products)
+
+    def __str__(self) -> str:
+        quantity = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {quantity} шт."
 
     def add_product(self, prod: Product) -> Any:
         """
