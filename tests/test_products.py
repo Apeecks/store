@@ -1,11 +1,12 @@
-import pytest
 from typing import Any
 
-from src.products import Category, Product
-from src.lawn_grass import LawnGrass
-from src.smartphone import Smartphone
+import pytest
+
 from src.base_product import BaseProduct
+from src.lawn_grass import LawnGrass
 from src.mixin_repr import MixinRepr
+from src.products import Category, Product
+from src.smartphone import Smartphone
 
 
 def test_class_prod_cat(product: Any, category: Any) -> Any:
@@ -195,3 +196,25 @@ def test_mixin_repr(capsys: Any) -> None:
 
     assert smartphone.price == 2000
     assert grass.quantity == 3
+
+
+def test_zero_quantity_product() -> None:
+    with pytest.raises(ValueError, match="^Товар с нулевым количеством не может быть добавлен$"):
+        Product("Бракованный товар", "Описание", 1000.0, 0)
+
+    with pytest.raises(ValueError, match="^Товар с нулевым количеством не может быть добавлен$"):
+        Smartphone("Телефон", "Описание", 2000.0, 0, 95.5, "A1", 128, "Чёрный")
+
+    with pytest.raises(ValueError, match="^Товар с нулевым количеством не может быть добавлен$"):
+        LawnGrass("Трава", "Описание", 100.0, 0, "Россия", "7 дней", "Зелёный")
+
+
+def test_middle_price(product: Product, product2: Product) -> None:
+    category = Category("Товары", "Описание", [product, product2])
+    assert category.middle_price() == pytest.approx(1.65)
+
+    category.add_product(Product("Товар3", "Описание", 4.7, 100))
+    assert category.middle_price() == pytest.approx((1.1 + 2.2 + 4.7) / 3)
+
+    empty_category = Category("Пустая категория", "Описание", [])
+    assert empty_category.middle_price() == 0

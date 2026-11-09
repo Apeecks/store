@@ -8,6 +8,9 @@ class Product(MixinRepr, BaseProduct):
     __price: float
 
     def __init__(self, name: str, description: str, price: float, quantity: int):
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
+
         self.__price = price
         super().__init__(name, description, price, quantity)
 
@@ -93,3 +96,12 @@ class Category:
         for x in self.__products:
             product_str += f"{x.name}, {x.price} руб. Остаток: {x.quantity} шт.\n"
         return product_str
+
+    def middle_price(self) -> float:
+        """
+        Возвращает среднюю цену товаров категории.
+        """
+        try:
+            return sum(product.price for product in self.__products) / len(self.__products)
+        except ZeroDivisionError:
+            return 0
