@@ -1,6 +1,9 @@
+import pytest
 from typing import Any
 
 from src.products import Category, Product
+from src.lawn_grass import LawnGrass
+from src.smartphone import Smartphone
 
 
 def test_class_prod_cat(product: Any, category: Any) -> Any:
@@ -76,3 +79,69 @@ def test_magic_methods(product: Product, product2: Product, category: Category) 
 
     category.add_product(product2)
     assert str(category) == "Имя, количество продуктов: 3 шт."
+
+
+def test_smartphone(
+    prod1_smartphone: Smartphone,
+    prod2_smartphone: Smartphone
+) -> None:
+    assert isinstance(prod1_smartphone, Product)
+
+    assert prod1_smartphone.name == "Phone1"
+    assert prod1_smartphone.description == "Описание1"
+    assert prod1_smartphone.price == 1.0
+    assert prod1_smartphone.quantity == 1
+
+    assert prod1_smartphone.efficiency == 1.0
+    assert prod1_smartphone.model == "1"
+    assert prod1_smartphone.memory == 1
+    assert prod1_smartphone.color == "Цвет1"
+
+    assert prod1_smartphone + prod2_smartphone == 5.0
+
+
+def test_lawn_grass(
+    prod1_grass: LawnGrass,
+    prod2_grass: LawnGrass
+) -> None:
+    assert isinstance(prod1_grass, Product)
+
+    assert prod1_grass.name == "Трава1"
+    assert prod1_grass.description == "Описание1"
+    assert prod1_grass.price == 1.0
+    assert prod1_grass.quantity == 1
+
+    assert prod1_grass.country == "Страна1"
+    assert prod1_grass.germination_period == "1 день"
+    assert prod1_grass.color == "Цвет1"
+
+    assert prod1_grass + prod2_grass == 5.0
+
+
+def test_type_restrictions(
+    category: Category,
+    product: Product,
+    prod1_smartphone: Smartphone,
+    prod1_grass: LawnGrass
+) -> None:
+
+    with pytest.raises(TypeError):
+        prod1_smartphone + prod1_grass
+
+    with pytest.raises(TypeError):
+        prod1_grass + prod1_smartphone
+
+    with pytest.raises(TypeError):
+        product + prod1_smartphone
+
+    category.add_product(prod1_smartphone)
+    category.add_product(prod1_grass)
+
+    assert Category.product_count == 3
+
+    invalid_product: Any = "Not a product"
+
+    with pytest.raises(TypeError):
+        category.add_product(invalid_product)
+
+    assert Category.product_count == 3
